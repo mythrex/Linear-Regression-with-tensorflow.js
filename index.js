@@ -3,7 +3,7 @@ let ys = [];
 let theta0, theta1;
 
 // using gradient decent
-const learningRate = 0.02;
+const learningRate = 0.05;
 const optimizer = tf.train.sgd(learningRate);
 
 // loss function
@@ -61,20 +61,25 @@ function draw() {
 		point(px, py);
 	}
 
-	if (xs.length > 0) {
-		// change the weight
-		const tfys = tf.tensor1d(ys);
-		optimizer.minimize(() => loss(predict(xs), tfys));
-	}
+	tf.tidy(() => {
+		if (xs.length > 0) {
+			// change the weight
+			const tfys = tf.tensor1d(ys);
+			optimizer.minimize(() => loss(predict(xs), tfys));
+		}
 
-	let x_line = [0, 1];
-	let y_line = predict(x_line);
-	let x1 = deNormalizeX(x_line[0]);
-	let x2 = deNormalizeX(x_line[1]);
+		let x_line = [0, 1];
+		let y_line = predict(x_line);
+		let x1 = deNormalizeX(x_line[0]);
+		let x2 = deNormalizeX(x_line[1]);
 
-	y_line = y_line.dataSync();
-	let y1 = deNormalizeY(y_line[0]);
-	let y2 = deNormalizeY(y_line[1]);
+		y_line = y_line.dataSync();
+		let y1 = deNormalizeY(y_line[0]);
+		let y2 = deNormalizeY(y_line[1]);
 
-	line(x1, y1, x2, y2);
+		strokeWeight(2);
+		line(x1, y1, x2, y2);
+	});
+
+	console.log(tf.memory().numTensors);
 }
